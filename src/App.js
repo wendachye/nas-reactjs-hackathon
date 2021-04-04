@@ -1,11 +1,47 @@
 import React, { useEffect, useState } from "react";
+import Navbar from "./components/Navbar/Navbar";
+import Spinner from "./components/Spinner/Spinner";
+import News from "./components/News/News";
+import timeAgoUtil from "./utils/timeAgoUtil.js";
 import "./App.css";
 
 function App() {
-  const [navCollapsed, setNavCollapsed] = useState(true);
   const [activeNavItem, setActiveNavItem] = useState("");
   const [story, setStory] = useState("topstories");
   const [stories, setStories] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const timetoTimeAgo = (timeStamp) => {
+    let timeSegments = [
+      3.154e10,
+      2.628e9,
+      6.048e8,
+      8.64e7,
+      3.6e6,
+      60000,
+      -Infinity,
+    ];
+
+    let makeTimeString = (unit, singularString) => (timeSegment, time) =>
+      time >= 2 * timeSegment
+        ? `${Math.floor(time / timeSegment)} ${unit}s ago`
+        : singularString;
+
+    let timeFunctions = [
+      makeTimeString("year", "1 year ago"),
+      makeTimeString("month", "1 month ago"),
+      makeTimeString("week", "1 week ago"),
+      makeTimeString("day", "1 day ago"),
+      makeTimeString("hour", "an hour ago"),
+      makeTimeString("minute", "a minute ago"),
+      (_) => "just now",
+    ];
+
+    let timeDifference = Date.now() - timeStamp;
+    let index = timeSegments.findIndex((time) => timeDifference >= time);
+    let timeAgo = timeFunctions[index](timeSegments[index], timeDifference);
+    return timeAgo;
+  };
 
   const fetchItem = async (itemId) => {
     try {
@@ -15,7 +51,8 @@ function App() {
 
       let data = await response.json();
 
-      console.log(data);
+      data.formattedTime = timeAgoUtil(new Date(data.time * 1000));
+
       return data;
     } catch (error) {
       console.log(error);
@@ -25,7 +62,7 @@ function App() {
   useEffect(() => {
     const pageLimit = process.env.REACT_APP_PAGE_LIMIT
       ? process.env.REACT_APP_PAGE_LIMIT
-      : 50;
+      : 30;
 
     const fetchStories = async (type) => {
       try {
@@ -39,10 +76,12 @@ function App() {
         let stories = [];
 
         for (const item of data) {
-          let story = fetchItem(item);
+          let story = await fetchItem(item);
 
           stories = [...stories, story];
         }
+
+        console.log(stories);
 
         setStories(stories);
       } catch (error) {
@@ -50,117 +89,26 @@ function App() {
       }
     };
 
-    // fetchStories(story);
-
     setActiveNavItem(window.location.pathname);
+
+    fetchStories(story);
   }, [story]);
 
-  const onClickToggleNav = () => {
-    setNavCollapsed(!navCollapsed);
-  };
-
   return (
-    <nav className="navbar navbar-expand-sm navbar-light bg-light">
-      <div className="container-fluid">
-        <a className="navbar-brand" href="/">
-          Hacker News
-        </a>
-        <button
-          className="navbar-toggler"
-          type="button"
-          onClick={onClickToggleNav}
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div
-          className={
-            navCollapsed ? `collapse navbar-collapse` : "navbar-collapse"
-          }
-        >
-          <ul className="navbar-nav">
-            <li className="nav-item">
-              <a
-                className={
-                  activeNavItem === "/new" ? `nav-link active` : `nav-link`
-                }
-                href="/new"
-              >
-                New
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className={
-                  activeNavItem === "/past" ? `nav-link active` : `nav-link`
-                }
-                href="/past"
-              >
-                Past
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className={
-                  activeNavItem === "/comments" ? `nav-link active` : `nav-link`
-                }
-                href="/comments"
-              >
-                Comments
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className={
-                  activeNavItem === "/ask" ? `nav-link active` : `nav-link`
-                }
-                href="/ask"
-              >
-                Ask
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className={
-                  activeNavItem === "/show" ? `nav-link active` : `nav-link`
-                }
-                href="/show"
-              >
-                Show
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className={
-                  activeNavItem === "/jobs" ? `nav-link active` : `nav-link`
-                }
-                href="/jobs"
-              >
-                Jobs
-              </a>
-            </li>
-          </ul>
-        </div>
+    <>
+      <Navbar activeNavItem={activeNavItem} />
+      <div>
+        {stories.length > 0 ? (
+          <div>
+            {stories.map((item, key) => (
+              <News key={key} itemNo={key} item={item} />
+            ))}
+          </div>
+        ) : (
+          <Spinner />
+        )}
       </div>
-      {stories.map((story) => {
-        console.log(story);
-      })}
-      {/* <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div> */}
-    </nav>
+    </>
   );
 }
 
