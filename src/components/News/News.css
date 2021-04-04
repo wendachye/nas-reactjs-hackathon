@@ -1,0 +1,12 @@
+.news-content {
+  padding: 5px;
+}
+
+.news-title {
+  font-size: 14px;
+}
+
+.news-metadata {
+  font-size: 11px;
+  color: gray;
+}
