@@ -1,0 +1,20 @@
+.page-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 15px;
+}
+
+.pagination {
+  margin-bottom: 0px;
+}
+
+.page-item.active .page-link {
+  background-color: #ff6600 !important;
+  border-color: #ff6600 !important;
+  color: white !important;
+}
+
+.page-link {
+  color: #ff6600 !important;
+}
