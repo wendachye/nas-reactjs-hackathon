@@ -11,49 +11,13 @@ function App() {
   const [stories, setStories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const timetoTimeAgo = (timeStamp) => {
-    let timeSegments = [
-      3.154e10,
-      2.628e9,
-      6.048e8,
-      8.64e7,
-      3.6e6,
-      60000,
-      -Infinity,
-    ];
-
-    let makeTimeString = (unit, singularString) => (timeSegment, time) =>
-      time >= 2 * timeSegment
-        ? `${Math.floor(time / timeSegment)} ${unit}s ago`
-        : singularString;
-
-    let timeFunctions = [
-      makeTimeString("year", "1 year ago"),
-      makeTimeString("month", "1 month ago"),
-      makeTimeString("week", "1 week ago"),
-      makeTimeString("day", "1 day ago"),
-      makeTimeString("hour", "an hour ago"),
-      makeTimeString("minute", "a minute ago"),
-      (_) => "just now",
-    ];
-
-    let timeDifference = Date.now() - timeStamp;
-    let index = timeSegments.findIndex((time) => timeDifference >= time);
-    let timeAgo = timeFunctions[index](timeSegments[index], timeDifference);
-    return timeAgo;
-  };
-
   const fetchItem = async (itemId) => {
     try {
       let response = await fetch(
         `https://hacker-news.firebaseio.com/v0/item/${itemId}.json?print=pretty`
       );
 
-      let data = await response.json();
-
-      data.formattedTime = timeAgoUtil(new Date(data.time * 1000));
-
-      return data;
+      return await response.json();
     } catch (error) {
       console.log(error);
     }
@@ -77,6 +41,7 @@ function App() {
 
         for (const item of data) {
           let story = await fetchItem(item);
+          story.formattedTime = timeAgoUtil(new Date(story.time * 1000));
 
           stories = [...stories, story];
         }

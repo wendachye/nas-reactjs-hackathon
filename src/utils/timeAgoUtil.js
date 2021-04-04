@@ -23,9 +23,11 @@ let timeFunctions = [
   (_) => "just now",
 ];
 
-export default (timeStamp) => {
+const timeAgoUtils = (timeStamp) => {
   let timeDifference = Date.now() - timeStamp;
   let index = timeSegments.findIndex((time) => timeDifference >= time);
   let timeAgo = timeFunctions[index](timeSegments[index], timeDifference);
   return timeAgo;
 };
+
+export default timeAgoUtils;
