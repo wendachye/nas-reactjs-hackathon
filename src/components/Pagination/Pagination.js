@@ -37,16 +37,25 @@ function Pagination({
   };
 
   const handleClick = (page) => (e) => {
+    e.preventDefault();
+
+    window.location.search = `?page=${page}`;
     gotoPage(page);
   };
 
   const handleMoveLeft = (e) => {
-    // gotoPage(currentPage - pageNeighbours * 2 - 1);
-    gotoPage(currentPage - 1);
+    e.preventDefault();
+
+    let newCurrentPage = currentPage - 1;
+    window.location.search = `?page=${newCurrentPage}`;
+    gotoPage(newCurrentPage);
   };
 
   const handleMoveRight = (e) => {
-    // gotoPage(currentPage + pageNeighbours * 2 + 1);
+    e.preventDefault();
+
+    let newCurrentPage = currentPage + 1;
+    window.location.search = `?page=${newCurrentPage}`;
     gotoPage(currentPage + 1);
   };
 
@@ -115,7 +124,8 @@ function Pagination({
               <li key={index} className="page-item">
                 <a
                   className="page-link"
-                  href={`?page=${currentPage}`}
+                  //   href={previousPageHref}
+                  href="/#"
                   aria-label="Previous"
                   onClick={handleMoveLeft}
                 >
@@ -125,12 +135,15 @@ function Pagination({
               </li>
             );
 
-          if (page === RIGHT_PAGE)
+          if (page === RIGHT_PAGE) {
+            console.log(index);
+
             return (
               <li key={index} className="page-item">
                 <a
                   className="page-link"
-                  href={`?page=${currentPage}`}
+                  //   href={`?page=${index}`}
+                  href="/#"
                   aria-label="Next"
                   onClick={handleMoveRight}
                 >
@@ -139,6 +152,7 @@ function Pagination({
                 </a>
               </li>
             );
+          }
 
           return (
             <li
@@ -147,7 +161,8 @@ function Pagination({
             >
               <a
                 className="page-link"
-                href={`?page=${page}`}
+                // href={`?page=${page}`}
+                href="/#"
                 onClick={handleClick(page)}
               >
                 {page}
