@@ -2,11 +2,21 @@
   padding-top: 10px;
 }
 
+.news-url {
+  color: black;
+}
+
 .news-title {
   font-size: 14px;
+  font-weight: 500;
 }
 
 .news-metadata {
   font-size: 11px;
+  color: gray;
+  padding-left: 15px;
+}
+
+.news-metadata-link {
   color: gray;
 }

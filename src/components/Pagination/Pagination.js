@@ -124,7 +124,6 @@ function Pagination({
               <li key={index} className="page-item">
                 <a
                   className="page-link"
-                  //   href={previousPageHref}
                   href="/#"
                   aria-label="Previous"
                   onClick={handleMoveLeft}
@@ -136,13 +135,10 @@ function Pagination({
             );
 
           if (page === RIGHT_PAGE) {
-            console.log(index);
-
             return (
               <li key={index} className="page-item">
                 <a
                   className="page-link"
-                  //   href={`?page=${index}`}
                   href="/#"
                   aria-label="Next"
                   onClick={handleMoveRight}
@@ -159,12 +155,7 @@ function Pagination({
               key={index}
               className={`page-item ${currentPage === page && "active"}`}
             >
-              <a
-                className="page-link"
-                // href={`?page=${page}`}
-                href="/#"
-                onClick={handleClick(page)}
-              >
+              <a className="page-link" href="/#" onClick={handleClick(page)}>
                 {page}
               </a>
             </li>
